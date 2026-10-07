@@ -1,0 +1,455 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acervo Jorge Feitosa | Galeria de Objetos</title>
+    
+    <!-- Scripts & Styles -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- React & Babel Standalone -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fafafa;
+            color: #1a1a1a;
+            scroll-behavior: smooth;
+        }
+        .font-serif {
+            font-family: 'Bodoni Moda', serif;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+        .selection\:bg-black::selection { background-color: black; color: white; }
+        
+        @keyframes fade-in-down {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes text-reveal {
+          from { transform: translateY(100%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes slow-zoom {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+          100% { transform: scale(1); }
+        }
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slide-in-left {
+          from { opacity: 0; transform: translateX(-60px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slide-in-right {
+          from { opacity: 0; transform: translateX(60px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes line-grow {
+          from { transform: scaleY(0); }
+          to { transform: scaleY(1); }
+        }
+        .animate-fade-in-down { animation: fade-in-down 1s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        .animate-text-reveal { animation: text-reveal 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards; }
+        .animate-slow-zoom { animation: slow-zoom 20s ease-in-out infinite; }
+        .vertical-text { writing-mode: vertical-rl; }
+        .bio-visible .bio-fade-up { animation: fade-in-up 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        .bio-visible .bio-slide-left { animation: slide-in-left 1s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        .bio-visible .bio-slide-right { animation: slide-in-right 1s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        .bio-fade-up, .bio-slide-left, .bio-slide-right { opacity: 0; }
+        .bio-timeline-line { transform-origin: top; animation: line-grow 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        .bio-image-wrapper { position: relative; overflow: hidden; }
+        .bio-image-wrapper::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.4) 100%); pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Navbar = () => {
+          const [scrolled, setScrolled] = useState(false);
+          useEffect(() => {
+            const handleScroll = () => setScrolled(window.scrollY > 50);
+            window.addEventListener('scroll', handleScroll);
+            return () => window.removeEventListener('scroll', handleScroll);
+          }, []);
+
+          return (
+            <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 animate-fade-in-down ${scrolled ? 'bg-white/90 backdrop-blur-md py-4 border-b border-stone-100 shadow-sm' : 'bg-transparent py-8'}`}>
+              <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                <div className="flex flex-col group cursor-pointer">
+                  <span className="font-serif text-xl md:text-2xl tracking-[0.1em] uppercase transition-all duration-500 group-hover:tracking-[0.2em] whitespace-nowrap">Acervo Jorge Feitosa</span>
+                  <span className="text-[10px] uppercase tracking-[0.4em] text-stone-500 -mt-1 ml-1 group-hover:text-stone-900 transition-colors">Curadoria de Autor</span>
+                </div>
+                <div className="hidden md:flex gap-10 text-[11px] uppercase tracking-[0.2em] font-bold text-stone-800">
+                  <a href="#biografia" className="relative hover:text-stone-400 transition-colors group">Biografia<span className="absolute -bottom-1 left-0 w-0 h-px bg-black transition-all group-hover:w-full"></span></a>
+                  <a href="#manifesto" className="relative hover:text-stone-400 transition-colors group">Manifesto<span className="absolute -bottom-1 left-0 w-0 h-px bg-black transition-all group-hover:w-full"></span></a>
+                  <a href="#galeria" className="relative hover:text-stone-400 transition-colors group">Coleção<span className="absolute -bottom-1 left-0 w-0 h-px bg-black transition-all group-hover:w-full"></span></a>
+                  <a href="#curadoria" className="relative hover:text-stone-400 transition-colors group">Curadoria<span className="absolute -bottom-1 left-0 w-0 h-px bg-black transition-all group-hover:w-full"></span></a>
+                  <a href="https://wa.me/5511999904324" target="_blank" className="hover:text-stone-400 transition-colors border-b-2 border-black pb-0.5">Contato</a>
+                </div>
+              </div>
+            </nav>
+          );
+        };
+
+        const Hero = () => (
+          <section className="relative min-h-screen flex items-center justify-center pt-32 pb-20 overflow-hidden bg-black">
+            <div className="absolute inset-0 z-0 bg-cover bg-fixed bg-center bg-no-repeat animate-slow-zoom" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop")', filter: 'grayscale(100%) brightness(0.5)' }}>
+              <div className="absolute inset-0 bg-black/60"></div>
+            </div>
+            <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-white">
+              <h1 className="font-serif text-6xl md:text-9xl leading-[0.85] tracking-tighter">
+                <span className="block overflow-hidden"><span className="block animate-text-reveal">Habitar uma</span></span>
+                <span className="italic font-normal block mt-4 overflow-hidden"><span className="block animate-text-reveal" style={{animationDelay: '0.2s'}}>Obra de Arte.</span></span>
+              </h1>
+            </div>
+          </section>
+        );
+
+        const Biography = () => {
+          const sectionRef = React.useRef(null);
+          const [isVisible, setIsVisible] = useState(false);
+
+          useEffect(() => {
+            const observer = new IntersectionObserver(
+              ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
+              { threshold: 0.15 }
+            );
+            if (sectionRef.current) observer.observe(sectionRef.current);
+            return () => observer.disconnect();
+          }, []);
+
+          const timeline = [
+            { year: '2013', text: 'Graduado em Artes Visuais (Belas Artes)' },
+            { year: '2016', text: 'Primeiras individuais: "Lágrimas de Ouro" (SP) e "NAVEGAR ES PRECISO" (Havana, Cuba)' },
+            { year: '2022', text: '16ª Verbo – Mostra de Performance Arte (Galeria Vermelho)' },
+            { year: '2024', text: 'ArtRio (Brasil Contemporâneo) e Jardim das Esculturas (Marina da Glória)' },
+            { year: '2025', text: 'Individual "Viagem – Matéria, rito e memória ancestral" em Paris, França' },
+          ];
+
+          return (
+            <section id="biografia" ref={sectionRef} className={`py-32 bg-black text-white relative overflow-hidden ${isVisible ? 'bio-visible' : ''}`}>
+              {/* Background texture */}
+              <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
+
+              <div className="max-w-7xl mx-auto px-6 relative z-10">
+                {/* Section header */}
+                <div className="mb-20 bio-fade-up">
+                  <span className="text-[10px] uppercase tracking-[0.5em] text-stone-500 block font-bold mb-4">O Artista</span>
+                  <h2 className="font-serif text-5xl md:text-8xl leading-[0.85] tracking-tighter">
+                    Jorge <span className="italic font-normal text-stone-400">Feitosa</span>
+                  </h2>
+                  <p className="text-[11px] uppercase tracking-[0.3em] text-stone-500 mt-4 font-bold">Artista Visual</p>
+                </div>
+
+                {/* Main content grid */}
+                <div className="grid md:grid-cols-5 gap-12 md:gap-16 items-start">
+                  
+                  {/* Photo column */}
+                  <div className="md:col-span-2 bio-slide-left" style={{ animationDelay: '0.2s' }}>
+                    <div className="bio-image-wrapper">
+                      <img 
+                        src="public/images/jorge-feitosa.jpg" 
+                        alt="Jorge Feitosa — Artista Visual" 
+                        className="w-full aspect-[3/4] object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                      />
+                    </div>
+                    <div className="mt-6 flex items-center gap-4">
+                      <div className="w-8 h-px bg-stone-600"></div>
+                      <span className="text-[9px] uppercase tracking-[0.3em] text-stone-500">Porto Velho, RO — São Paulo, SP</span>
+                    </div>
+                  </div>
+
+                  {/* Bio text column */}
+                  <div className="md:col-span-3 bio-slide-right" style={{ animationDelay: '0.4s' }}>
+                    <div className="space-y-8">
+                      <p className="text-stone-300 text-lg md:text-xl leading-relaxed font-light">
+                        Jorge Feitosa (Porto Velho, RO) é um artista visual cuja trajetória artística dialoga entre a herança artesanal — filho de marceneiro e costureira — e a arte contemporânea. Reside em São Paulo, mantendo um fluxo constante com Rondônia e a floresta Amazônica.
+                      </p>
+                      <p className="text-stone-400 text-base leading-relaxed font-light">
+                        Sua pesquisa em performance, fotografia, vídeo e escultura explora temas como identidade, deslocamento, enraizamento e a constituição das subjetividades do indivíduo contemporâneo, com forte ligação com a Amazônia.
+                      </p>
+
+                      <div className="w-16 h-px bg-stone-700 my-10"></div>
+
+                      {/* Formation */}
+                      <div>
+                        <h3 className="text-[10px] uppercase tracking-[0.5em] text-white font-bold mb-2">Formação</h3>
+                        <p className="text-stone-400 text-sm leading-relaxed">Graduado em Artes Visuais (Belas Artes, 2013) e formação livre em fotografia (MAM-SP, 2009).</p>
+                      </div>
+
+                      {/* Timeline */}
+                      <div className="mt-12">
+                        <h3 className="text-[10px] uppercase tracking-[0.5em] text-white font-bold mb-8">Destaques</h3>
+                        <div className="relative pl-8 border-l border-stone-800">
+                          {timeline.map((item, idx) => (
+                            <div key={idx} className="mb-8 last:mb-0 relative bio-fade-up" style={{ animationDelay: `${0.6 + idx * 0.15}s` }}>
+                              <div className="absolute -left-[calc(2rem+4.5px)] top-1.5 w-2 h-2 rounded-full bg-stone-600 border-2 border-black"></div>
+                              <span className="text-[10px] uppercase tracking-[0.3em] text-stone-500 font-bold block mb-1">{item.year}</span>
+                              <p className="text-stone-300 text-sm leading-relaxed">{item.text}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Exhibitions */}
+                      <div className="mt-8">
+                        <h3 className="text-[10px] uppercase tracking-[0.5em] text-white font-bold mb-4">Mostras Relevantes</h3>
+                        <p className="text-stone-400 text-sm leading-relaxed">
+                          Presença Permeável (Praça das Artes) · Mappa Dell'arte Nuova – Imago (Fondazione Giorgio Cini, Itália)
+                        </p>
+                      </div>
+
+                      {/* Collections */}
+                      <div className="mt-8 p-8 border border-stone-800 bg-stone-900/50">
+                        <h3 className="text-[10px] uppercase tracking-[0.5em] text-white font-bold mb-4">Acervos</h3>
+                        <p className="text-stone-400 text-sm leading-relaxed">
+                          Seu trabalho integra os acervos do <strong className="text-stone-300">Museu de Arte do Rio (MAR/RJ)</strong> e do <strong className="text-stone-300">MUnA – Museu Universitário de Arte (IARTE/UFU/MG)</strong>.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          );
+        };
+
+        const Gallery = () => {
+          const scrollRef = React.useRef(null);
+          const [canScrollLeft, setCanScrollLeft] = useState(false);
+          const [canScrollRight, setCanScrollRight] = useState(true);
+
+          const pieces = [
+            { src: "public/images/CASTIÇAL.jpg", title: "Castiçal Val Saint Lambert" },
+            { src: "public/images/LICOREIRA.jpeg", title: "Licoreira Moser" },
+
+            { src: "public/images/YSL.jpg", title: "YSL Yamaka" },
+            { src: "Amarelo de Jantar Vintage Luneville policromia Peixes.jpg.jpeg", title: "Amarelo de Jantar Vintage Luneville policromia Peixes" },
+            { src: "Aparelho de café vintage Noritake Moriage vintage Ouro em Relevo .jpeg", title: "Aparelho de café vintage Noritake Moriage vintage Ouro em Relevo" },
+            { src: "Bandeja decorativa  Cinegetica Art Noveau.jpeg", title: "Bandeja decorativa Cinegetica Art Noveau" },
+            { src: "Bandeja em cerâmica Kumagai Sou Shoten.jpeg", title: "Bandeja em cerâmica Kumagai Sou Shoten" },
+            { src: "Bandeja Migalheira em Laca Vintage Estilo Chinoiserie.jpeg", title: "Bandeja Migalheira em Laca Vintage Estilo Chinoiserie" },
+            { src: "Bandeja Noritake em porcelana verde absinto .jpeg", title: "Bandeja Noritake em porcelana verde absinto" },
+            { src: "Castiçal  Macaco Hollywood Regency.jpeg", title: "Castiçal Macaco Hollywood Regency" },
+            { src: "Castiçal Eberle vintage em banho de prata.jpeg", title: "Castiçal Eberle vintage em banho de prata" },
+            { src: "Conjunto de Toucador Vintage em Cristal Belga Val St. Lambert.jpeg", title: "Conjunto de Toucador Vintage em Cristal Belga Val St. Lambert" },
+            { src: "Conjunto de xícaras de cafe vintage porcelana japonesa.jpeg", title: "Conjunto de xícaras de cafe vintage porcelana japonesa" },
+            { src: "Decanter Moser em cristal lapidado.jpeg", title: "Decanter Moser em cristal lapidado" },
+            { src: "Licoreira Moser Vintage Amarelo Citrino - Copos 4,7cm (L) x 5,7cm (A) x 3,8cm (P) (cada).jpeg", title: "Licoreira Moser Vintage Amarelo Citrino" },
+            { src: "Prato Vintage em Cobre com motivo Cinegetico.jpeg", title: "Prato Vintage em Cobre com motivo Cinegetico" },
+            { src: "Travessa Gamela Fruteira vintage em Jacaranda.jpeg", title: "Travessa Gamela Fruteira vintage em Jacaranda" },
+            { src: "Travessa Vintage em Porcelana de Limoges.jpeg", title: "Travessa Vintage em Porcelana de Limoges" },
+            { src: "Vaso em Murano.jpeg", title: "Vaso em Murano" },
+            { src: "Vaso porcelana de Limoges.jpeg", title: "Vaso porcelana de Limoges" },
+            { src: "Vaso VINTAGE NANCY FRANCE CRISTAL ROYAL BLUE.jpeg", title: "Vaso Vintage Nancy France Cristal Royal Blue" },
+            { src: "Xicaras em porcelana casca de ovo vintage japonesa.jpeg", title: "Xícaras em porcelana casca de ovo vintage japonesa" },
+            { src: "public/Bibelo CachorroCeramica Vintage Brasileira Pedreira.jpg", title: "Bibelô Cachorro Cerâmica Vintage Brasileira Pedreira" },
+            { src: "public/Cachepot cerâmica vintage brasileira Pedreira.jpg", title: "Cachepot cerâmica vintage brasileira Pedreira" },
+            { src: "public/Castiçal art nouveau cerâmica vintage brasileira.jpg", title: "Castiçal Art Nouveau cerâmica vintage brasileira" },
+            { src: "public/Castiçal banho de prata vintage Eberle.jpg", title: "Castiçal banho de prata vintage Eberle" },
+            { src: "public/Castiçal Cristal Belga Vintage Val Saint Lambert.jpg", title: "Castiçal Cristal Belga Vintage Val Saint Lambert" },
+            { src: "public/castiçal em banho de prata vintage Christofle.jpg", title: "Castiçal em banho de prata vintage Christofle" },
+            { src: "public/Castiçal em cerâmica vintage brasileira.jpg", title: "Castiçal em cerâmica vintage brasileira" },
+            { src: "public/Castiçal Val Saint Lamber cristal.jpg", title: "Castiçal Val Saint Lambert cristal" },
+            { src: "public/Castiçal Wild Rose Ceramica Vintage.jpg", title: "Castiçal Wild Rose Cerâmica Vintage" },
+            { src: "public/Castiçal Wild Rose cerâmica vintage zappi.jpg", title: "Castiçal Wild Rose cerâmica vintage Zappi" },
+
+            { src: "public/Ceramica Vintage Brasileira Pedreira.jpg", title: "Cerâmica Vintage Brasileira Pedreira" },
+            { src: "public/Cesto de Noiva Vitoriano em Vidro Azul.jpg", title: "Cesto de Noiva Vitoriano em Vidro Azul" },
+            { src: "public/Coleção vasos cerâmica artística Tupy.jpg", title: "Coleção vasos cerâmica artística Tupy" },
+            { src: "public/Escultura Cervo em metal prateado.jpg", title: "Escultura Cervo em metal prateado" },
+            { src: "public/Escultura Faisão em metal dourado.jpg", title: "Escultura Faisão em metal dourado" },
+            { src: "public/Floreira Vintage Ceramica Brasileira Pedreira.jpg", title: "Floreira Vintage Cerâmica Brasileira Pedreira" },
+            { src: "public/Jaru California.jpg", title: "Jaru California" },
+            { src: "public/Jogo de cafe em porcelana vintage Yamaka Saint Lauent YSL.jpg", title: "Jogo de café em porcelana vintage Yamaka Saint Laurent YSL" },
+            { src: "public/Jozef Stanik Golden Zuzana Tacas Champagne Coupes Amethyst Purple Gold Rim.jpg", title: "Jozef Stanik Golden Zuzana Taças Champagne Coupes" },
+            { src: "public/Pote de Genginge Ginger Bar Ceramica Jaru vintage California.jpg", title: "Pote Ginger Jar Cerâmica Jaru vintage California" },
+            { src: "public/Tacas de Cerveja Cocktail Jozef Stanik Golden Zuzana Gold Rim.jpg", title: "Taças de Cerveja Cocktail Jozef Stanik Golden Zuzana" },
+            { src: "public/Terrinas em cerâmica vintage GEO Portugal.jpg", title: "Terrinas em cerâmica vintage GEO Portugal" },
+
+            { src: "public/Vaso Ceramica Vintage Brasileira Pedreira Cornucopia.jpg", title: "Vaso Cerâmica Vintage Brasileira Pedreira Cornucópia" },
+            { src: "public/Vaso Ceramica Vintage Brasileira Pedreira Cornucopias.jpg", title: "Vaso Cerâmica Vintage Brasileira Pedreira Cornucópias" },
+            { src: "public/Vaso Ceramica Vintage Brasileira Pedreira Cornucópia em relevo.jpg", title: "Vaso Cerâmica Vintage Brasileira Pedreira Cornucópia em relevo" },
+            { src: "public/Vaso Ceramica Vintage Brasileira Pedreira Coruja.jpg", title: "Vaso Cerâmica Vintage Brasileira Pedreira Coruja" },
+            { src: "public/Vaso Ceramica Vintage Brasileira Pedreira Flores.jpg", title: "Vaso Cerâmica Vintage Brasileira Pedreira Flores" },
+            { src: "public/Vaso Ceramica Vintage Brasileira Pedreira.jpg", title: "Vaso Cerâmica Vintage Brasileira Pedreira" },
+            { src: "public/Vaso Jaru Ceramica Vintage Caliornia Ginger Bar oxblood.jpg", title: "Vaso Jaru Cerâmica Vintage California Ginger Jar Oxblood" },
+            { src: "public/Vasos Ceramica Artistica Tupy Vintage Brasileiro.jpg", title: "Vasos Cerâmica Artística Tupy Vintage Brasileiro" },
+            { src: "public/Xicaras em em porcelana vintage Yamaka Saint Lauent YSL.jpg", title: "Xícaras em porcelana vintage Yamaka Saint Laurent YSL" },
+            { src: "public/Xicaras em porcelana vintage Yamaka Saint Lauent YSL.jpg", title: "Xícaras em porcelana vintage Yamaka Saint Laurent YSL" },
+            { src: "public/YSL-MINIMAL-640.jpg", title: "YSL Minimal" },
+          ];
+
+          const handlePieceClick = () => {
+            window.open('https://www.instagram.com/acervo.jorgefeitosa/', '_blank');
+          };
+
+          const updateScrollButtons = () => {
+            const el = scrollRef.current;
+            if (!el) return;
+            setCanScrollLeft(el.scrollLeft > 10);
+            setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
+          };
+
+          useEffect(() => {
+            const el = scrollRef.current;
+            if (!el) return;
+            el.addEventListener('scroll', updateScrollButtons);
+            updateScrollButtons();
+            return () => el.removeEventListener('scroll', updateScrollButtons);
+          }, []);
+
+          const scroll = (direction) => {
+            const el = scrollRef.current;
+            if (!el) return;
+            const scrollAmount = el.clientWidth * 0.7;
+            el.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+          };
+
+          return (
+            <section id="galeria" className="py-32 bg-white relative overflow-hidden">
+              <div className="absolute inset-0 flex items-center justify-center opacity-[0.02] pointer-events-none">
+                <h2 className="font-serif text-[40vw] uppercase">ACERVO</h2>
+              </div>
+              <div className="max-w-7xl mx-auto px-6 relative z-10">
+                <div className="mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                  <div>
+                    <span className="text-[10px] uppercase tracking-[0.5em] text-stone-400 block font-bold mb-4">Investigação Histórica</span>
+                    <h2 className="font-serif text-5xl md:text-7xl leading-none tracking-tighter uppercase">Fragmentos<br/><span className="italic font-normal">do Acervo</span></h2>
+                  </div>
+                  <div className="flex items-center gap-6">
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-stone-500 font-bold max-w-xs leading-relaxed hidden md:block">A curadoria completa é revelada em nossa plataforma digital. Clique em uma peça para ver mais.</p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => scroll('left')}
+                        className={`w-12 h-12 border flex items-center justify-center transition-all duration-300 ${canScrollLeft ? 'border-black text-black hover:bg-black hover:text-white cursor-pointer' : 'border-stone-200 text-stone-300 cursor-default'}`}
+                        disabled={!canScrollLeft}
+                        aria-label="Anterior"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                      </button>
+                      <button
+                        onClick={() => scroll('right')}
+                        className={`w-12 h-12 border flex items-center justify-center transition-all duration-300 ${canScrollRight ? 'border-black text-black hover:bg-black hover:text-white cursor-pointer' : 'border-stone-200 text-stone-300 cursor-default'}`}
+                        disabled={!canScrollRight}
+                        aria-label="Próximo"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scrollable grid */}
+                <div
+                  ref={scrollRef}
+                  className="overflow-x-auto pb-4"
+                  style={{
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#333 #f1f1f1',
+                    WebkitOverflowScrolling: 'touch',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateRows: 'repeat(4, 1fr)',
+                      gridAutoFlow: 'column',
+                      gridAutoColumns: '180px',
+                      gap: '16px',
+                    }}
+                  >
+                    {pieces.map((piece, idx) => (
+                      <div
+                        key={idx}
+                        className="cursor-pointer group"
+                        onClick={handlePieceClick}
+                        style={{ width: '180px' }}
+                      >
+                        <div className="w-full aspect-square overflow-hidden bg-stone-100 border border-stone-100">
+                          <img
+                            src={piece.src}
+                            alt={piece.title}
+                            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 grayscale-0 group-hover:grayscale-0"
+                            loading="lazy"
+                          />
+                        </div>
+                        <p className="mt-2 text-[9px] uppercase tracking-[0.15em] text-stone-500 font-bold leading-tight line-clamp-2 group-hover:text-stone-900 transition-colors duration-300" style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }}>{piece.title}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+          );
+        };
+
+        const Curator = () => (
+          <section id="curadoria" className="py-24 bg-stone-50">
+            <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-8">
+                <h2 className="font-serif text-5xl md:text-7xl leading-[0.8]">Jorge <br /><span className="italic font-normal">Feitosa</span></h2>
+                <p className="text-stone-600 font-light text-lg leading-relaxed max-w-md">"Investigo a 'memória da matéria'. Para mim, o design é um repositório de histórias silenciosas."</p>
+              </div>
+              <div className="p-12 border border-stone-200 bg-white space-y-8">
+                <p className="text-[10px] uppercase tracking-[0.4em] text-black font-bold">Localização</p>
+                <div className="grid grid-cols-2 gap-8">
+                  <div>
+                    <p className="font-serif text-2xl italic">Mata Lab</p>
+                    <p className="text-[8px] uppercase tracking-widest text-stone-400">Exposição & Comercialização</p>
+                  </div>
+                  <div>
+                    <p className="font-serif text-2xl italic">Brasil</p>
+                    <p className="text-[8px] uppercase tracking-widest text-stone-400">Base</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+
+        const App = () => (
+          <div className="min-h-screen bg-stone-50">
+            <Navbar />
+            <main><Hero /><Biography /><Gallery /><Curator /></main>
+            <footer className="py-20 text-center border-t border-stone-100">
+               <h2 className="font-serif text-2xl uppercase tracking-widest">Acervo Jorge Feitosa</h2>
+               <div className="mt-8 flex justify-center flex-wrap gap-12 text-[10px] uppercase tracking-[0.3em] font-bold">
+                  <a href="https://www.instagram.com/acervo.jorgefeitosa/" target="_blank">Instagram</a>
+                  <a href="https://www.tiktok.com/@acervo.jorgefeitosa" target="_blank">TikTok</a>
+                  <a href="https://wa.me/5511999904324" target="_blank">WhatsApp</a>
+               </div>
+            </footer>
+          </div>
+        );
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
